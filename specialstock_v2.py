@@ -137,71 +137,9 @@ def main():
                 dupontNitogr_list.append(float(result_dupont.tail(1)["dupontNitogr"]))
                 ROE_list.append(float(result_dupont["dupontROE"]))
 
-
                 # 查股息
                 dividCash = calculatedividCash(item, currentyear,totalShare)
                 dividCash_list.append(dividCash)
-                # dividCash_list.append(0)
-
-                # 查股息  rs_list[6]是除权除息日
-                # rs_list = []
-                # rs_dividend = bs.query_dividend_data(code=item, year=currentyear, yearType="report")
-                # while (rs_dividend.error_code == '0') & rs_dividend.next():
-                #     rs_list.append(rs_dividend.get_row_data())
-                # # dividOperateDate = rs_list[0][9]
-                # result_dividend = pd.DataFrame(rs_list, columns=rs_dividend.fields)
-                # if len(result_dividend) == 1:
-                #     dividCash = result_dividend.iloc[0, result_dividend.columns.get_loc("dividCashPsBeforeTax")]
-                # elif len(result_dividend) == 0:
-                #     dividCash = 0
-                #     logging.info("{}分红数据有误或无分红,请手工计算".format(item))
-                # else:
-                #     # dividCash = result_dividend.iloc[0, result_dividend.cloumns.get_loc("dividCashPsBeforeTax")] + result_dividend.iloc[1, result_dividend.cloumns.get_loc("dividCashPsBeforeTax")]
-                #     print(result_dividend)
-                #     print("{}多次分红".format(item))
-                #     for dividend in range(len(result_dividend)):
-                #         dividCash += result_dividend.iloc[dividend, result_dividend.cloumns.get_loc("dividCashPsBeforeTax")]
-                # totaldividCash = float(dividCash * totalShare)
-                # dividCash_list.append(totaldividCash)
-
-                # # 完整可运行片段
-                # rs_list = []
-                # rs_dividend_2017 = bs.query_dividend_data(code=item, year=currentyear, yearType="report")
-                # while (rs_dividend_2017.error_code == '0') & rs_dividend_2017.next():
-                #     rs_list.append(rs_dividend_2017.get_row_data())
-
-                # result_dividend = pd.DataFrame(rs_list, columns=rs_dividend_2017.fields)
-                # if len(result_dividend) > 1 or len(result_dividend) == 0:
-                #     dividCash = 0
-                #     logging.info("{}分红数据有误或超出一次,请手工计算".format(item))
-                # else:
-                #     dividCash = result_dividend["dividCashPsBeforeTax"]
-                # try:
-                #     dividendYield = float(dividCash) / close
-                # except Exception as e:
-                #     logging.info("{},{}".format(item, e))
-                # dividCash_list.append(dividendYield)
-
-
-                # rs_list = []
-                # rs_dividend_2017 = bs.query_dividend_data(code=item, year=currentyear, yearType="report")
-                # while (rs_dividend_2017.error_code == '0') & rs_dividend_2017.next():
-                #     rs_list.append(rs_dividend_2017.get_row_data())
-
-                # result_dividend = pd.DataFrame(rs_list, columns=rs_dividend_2017.fields)
-                # if len(result_dividend) == 1:
-                #     dividCash = result_dividend.iloc[0, result_dividend.columns.get_loc("dividCashPsBeforeTax")]
-                # elif len(result_dividend) == 0:
-                #     dividCash = 0
-                #     logging.info("{}分红数据有误或无分红,请手工计算".format(item))
-                # else:
-                #     # dividCash = result_dividend.iloc[0, result_dividend.cloumns.get_loc("dividCashPsBeforeTax")] + result_dividend.iloc[1, result_dividend.cloumns.get_loc("dividCashPsBeforeTax")]
-                #     print(result_dividend)
-                #     print("{}多次分红".format(item))
-                #     for x in range(len(result_dividend)):
-                #         dividCash += result_dividend.iloc[x, result_dividend.cloumns.get_loc("dividCashPsBeforeTax")]
-                # totaldividCash = float(dividCash) * totalShare
-                # dividCash_list.append(totaldividCash)
 
                 # 季频现金流量
                 cash_flow_list = []
