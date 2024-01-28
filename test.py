@@ -9,7 +9,7 @@ def main():
     lg = bs.login()
 
     profit_list = []
-    rs_profit = bs.query_profit_data(code="sz.300888", year=2022, quarter=4)
+    rs_profit = bs.query_profit_data(code="sz.300888", year=2020, quarter=4)
     while (rs_profit.error_code == '0') & rs_profit.next():
         profit_list.append(rs_profit.get_row_data())
     result_profit = pd.DataFrame(profit_list, columns=rs_profit.fields)
