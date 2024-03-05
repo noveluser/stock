@@ -23,10 +23,14 @@ def cash(stock, custom_year,custom_quarter):
     rs_cash_flow = bs.query_cash_flow_data(code=stock, year=custom_year, quarter=custom_quarter)
     while (rs_cash_flow.error_code == '0') & rs_cash_flow.next():
         cash_flow_list.append(rs_cash_flow.get_row_data())
-    if len(cash_flow_list) > 1:
-        print("{} cash_flow超过一条".format(stock))
-    for item in cash_flow_list:
-        cash_flow_ratio = item[7]
+    if cash_flow_list:
+        for item in cash_flow_list:
+            try:
+                cash_flow_ratio = item[7]
+            except Exception as e:
+                logging.info(e)
+    else:
+        cash_flow_ratio = 0
     return cash_flow_ratio
 
 def profit(stock,custom_year,custom_quarter):
@@ -41,7 +45,7 @@ def profit(stock,custom_year,custom_quarter):
         # 6 净利润 8 营业收入 9 总股数   
         stockinfo = [item[6], item[8], item[9]]
         # print(item[6])
-        # print(item[8])
+        print(item[8])
         # print(item[9])
     return stockinfo
 
@@ -70,21 +74,24 @@ def calculatedividCash(code,currentyear,totalstockshare):
         rs_list.append(rs_dividend.get_row_data())
     # dividOperateDate = rs_list[0][9]
     result_dividend = pd.DataFrame(rs_list, columns=rs_dividend.fields)
+    dividCash = 0
     if len(result_dividend) == 1:
         try:
             dividCash = float(result_dividend.iloc[0, result_dividend.columns.get_loc("dividCashPsBeforeTax")])
         except Exception as e:
             logging.info(e)
-            dividCash = 0
             logging.info("{}分红数据未获取".format(code))
     elif len(result_dividend) == 0:
-        dividCash = 0
         logging.info("{}分红数据有误或无分红,请手工计算".format(code))
     else:
         # dividCash = result_dividend.iloc[0, result_dividend.cloumns.get_loc("dividCashPsBeforeTax")] + result_dividend.iloc[1, result_dividend.cloumns.get_loc("dividCashPsBeforeTax")]
-        logging("{}多次分红,需手工修订".format(code))
+        logging.info("{}多次分红,需手工修订".format(code))
         for dividend in range(len(result_dividend)):
-            dividCash += float(result_dividend.iloc[dividend, result_dividend.cloumns.get_loc("dividCashPsBeforeTax")])
+            try:
+                onecash = float(result_dividend.iloc[dividend, result_dividend.columns.get_loc("dividCashPsBeforeTax")])
+                dividCash += onecash
+            except Exception as e:
+                logging.info(e)
     totaldividCash = round(dividCash * totalstockshare)
     return totaldividCash
 
@@ -93,24 +100,53 @@ def calculatedividCash(code,currentyear,totalstockshare):
 def main():
     #### 登陆系统 ####
     lg = bs.login()
+    stock_list = ["sh.601225", "sh.603267", "sh.603596"]
     # stock_list = []
-    # data = pd.read_csv("d:\\1\\all_stock.csv")
+    # data = pd.read_csv("d:\\1\\testfilter.csv")
     # for index, row in data.iterrows():
     #     stock_list.append(row[0])
-    stockinfo = []
-    profit_list = []
-    rs_profit = bs.query_profit_data(code="sh.600018", year=2023, quarter=3)
-    while (rs_profit.error_code == '0') & rs_profit.next():
-        profit_list.append(rs_profit.get_row_data())
-    if len(profit_list) > 1:
-        print("{}profit_list超过一条".format(stock))
-    for item in  profit_list:
-        # 6 净利润 8 营业收入 9 总股数   
-        stockinfo = [item[6], item[8], item[9]]
-        # print(item[6])
-        print(item)
-        # print(item[9])
+    # Fiveyearbefore = 2020
+    # endyear = Fiveyearbefore + 3
+    custom_year = 2022
+    custom_quarter = 2
+    for stock in stock_list:
+        rs = bs.query_stock_basic(code=stock)
+        data_list = []
+        while (rs.error_code == '0') & rs.next():
+            # 获取一条记录，将记录合并在一起
+            data_list.append(rs.get_row_data())
+        if data_list:
+            ipodate = data_list[0][2]
+        else:
+            continue
+        if datetime.strptime(ipodate, "%Y-%m-%d") > datetime.strptime("{}-12-31".format(custom_year), '%Y-%m-%d'):
+            continue
+        myfinance = profit(stock, custom_year,custom_quarter)
+        mystockeprice = stockprice(stock,custom_year)
+        mycash_flow_ratio = cash(stock,custom_year,custom_quarter)
+        # 净资产 = 总股数*计算日股价/pb
+        # print("{} {} {}".format(myprofit[2], mystockeprice[1], mystockeprice[2]))
+        try:
+            totalshare = float(myfinance[2])
+        except Exception as e:
+            logging.info(e)
+            continue
+        mycash = calculatedividCash(stock,custom_year+1,totalshare)
+        mynetasset = round(totalshare * float(mystockeprice[1]) / float(mystockeprice[2]))
+        myprofit = round(float(myfinance[0])*2)
+        try:
+            myrevenue = round(float(myfinance[1])*2)
+        except Exception as e:
+            logging.info(e)
+            myrevenue = 0
 
+        print("{} {} {} {} {} {} {} {}".format(custom_year,stock, mynetasset, myprofit, myrevenue, totalshare, mycash_flow_ratio, mycash))
+        try:
+            query = "insert into stock.profit ( year, code, netasset ,profit, revenue, totalshares, cash_flow_ratio, cash) values ({}, '{}', {}, {}, {}, {}, {}, {});".format(custom_year,stock, mynetasset, myprofit, myrevenue, totalshare, mycash_flow_ratio, mycash)
+            # print(query)
+            queryResult = cursor.run_query(query)
+        except Exception as e:
+            logging.info(e)
     #### 登出系统 ####
     bs.logout()
 

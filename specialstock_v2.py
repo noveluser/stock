@@ -37,10 +37,11 @@ def calculatedividCash(code,currentyear,totalstockshare):
         logging.info("{}分红数据有误或无分红,请手工计算".format(code))
     else:
         # dividCash = result_dividend.iloc[0, result_dividend.cloumns.get_loc("dividCashPsBeforeTax")] + result_dividend.iloc[1, result_dividend.cloumns.get_loc("dividCashPsBeforeTax")]
-        print(result_dividend)
-        print("{}多次分红".format(code))
-        for dividend in range(len(result_dividend)):
-            dividCash += float(result_dividend.iloc[dividend, result_dividend.cloumns.get_loc("dividCashPsBeforeTax")])
+        # print(result_dividend)
+        # print("{}多次分红".format(code))
+        dividCash = 0
+        # for dividend in range(len(result_dividend)):
+        #     dividCash += float(result_dividend.iloc[dividend, result_dividend.cloumns.get_loc("dividCashPsBeforeTax")])
     totaldividCash = dividCash * totalstockshare
 
     return totaldividCash
@@ -154,6 +155,7 @@ def main():
             custom_columns = ["code", "总营收_3Y", "总营收_2Y", "总营收_1Y", "总营收", "净资产_3Y", "净资产_2Y", "净资产_1Y", "净资产", "净利润_3Y", "净利润_2Y", "净利润_1Y", "净利润", "分红_3Y", "分红_2Y", "分红_1Y", "分红","ROE_3Y","ROE_2Y","ROE_1Y","ROE",  "净利润率_3Y", "净利润率_2Y", "净利润率_1Y", "净利润率", "现金流_3Y", "现金流_2Y", "现金流_1Y", "现金流"]
             ori_df = pd.DataFrame([stock], columns=custom_columns)
             df = pd.concat([df, ori_df])
+            print(stock)
         else:
             pass
         print("{}--{}  end".format(currentyear, item))       
