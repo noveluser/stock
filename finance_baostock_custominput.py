@@ -44,9 +44,6 @@ def profit(stock,custom_year,custom_quarter):
     for item in  profit_list:
         # 6 净利润 8 营业收入 9 总股数   
         stockinfo = [item[6], item[8], item[9]]
-        # print(item[6])
-        print(item[8])
-        # print(item[9])
     return stockinfo
 
 def stockprice(stock, custom_year):
