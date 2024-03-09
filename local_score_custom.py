@@ -17,7 +17,7 @@ from decimal import Decimal
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
                     datefmt='%Y-%m-%d %H:%M:%S',
-                    filename="d:\\1\\getostock.log",
+                    filename="d:\\1\\getostock_custom.log",
                     filemode='a')
 
 
@@ -31,7 +31,7 @@ def main():
     potentail_netprofileratio = 0
     potential_roe = 0
     potentail_cashflow = 0
-    data = pd.read_excel("d:\\1\\detail.xlsx")
+    data = pd.read_excel("d:\\1\\detail_custom.xlsx")
     # 获取列名列表
     column_names = data.columns.tolist()
     for item in column_names:
@@ -55,14 +55,14 @@ def main():
         # 计算净资产增长率，减去一个最高值，降低预期
         selected_data = data[code].iloc[0:5]
         growth_rate = selected_data.pct_change() * 100
-        logging.info("{} {}".format(code, growth_rate))
+        # logging.info("{} {}".format(code, growth_rate))
         # 找到最高值
         max_value = growth_rate.max()
         # 去掉最高值
         filtered_growth_rate = growth_rate[growth_rate < max_value]
         # 计算剩余值的平均值
         potential_growing = filtered_growth_rate.mean()
-        logging.info(potential_growing)
+        logging.info("{} 净资产增长率{} PE:{} 股息率：{}".format(code, potential_growing, pe, cash))
         if potential_growing < 1:
              potential_growing = 0
         elif potential_growing < 5:
@@ -102,6 +102,7 @@ def main():
         sum_6_to_10 = data[code].iloc[10:15].sum()
         # 计算总和的比值
         netprofileratio = sum_1_to_5 / sum_6_to_10
+        logging.info("净利润率为{} ROE:{}".format(netprofileratio, ROE))
         if netprofileratio < 0.01:
             potentail_netprofileratio = 0
         elif netprofileratio < 0.05:
@@ -135,7 +136,7 @@ def main():
         df = pd.concat([df, ori_df])
 
     # finallydata = pd.DataFrame(df, columns=custom_columns)
-    df.to_excel("D:\\1\\final.xlsx", index=True)
+    df.to_excel("D:\\1\\final_custom.xlsx", index=True)
 
 
 if __name__ == '__main__':

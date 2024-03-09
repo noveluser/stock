@@ -28,7 +28,8 @@ def compare_netassets(stockcode,startyear, endyear):
         print(stockcode)
         endeyear_netasset = 0
     # 1.75是4年15%增长率，2.24是4年25%的增长率
-    if  endeyear_netasset > startyear_netasset * 1.75 and  endeyear_netasset < startyear_netasset * 2.44:
+    # if  endeyear_netasset > startyear_netasset * 1.75 and  endeyear_netasset < startyear_netasset * 2.44:
+    if  endeyear_netasset > startyear_netasset * 1.75 and endeyear_netasset < startyear_netasset * 4:
         return True
     else:
         return False
@@ -65,13 +66,14 @@ def main():
         filter_flag = compare_netassets(stockcode,startyear, endyear)
         if filter_flag:
             stock_list.append(stockcode)
-    # 二次筛选，剔除不正常增长的企业
-    for stockcode in stock_list:
-        second_filter_flag = compare_everyyearnetassets(stockcode,startyear, endyear)
-        if second_filter_flag:
-            second_stock_list.append(stockcode)       
+    # # 二次筛选，剔除不正常增长的企业
+    # for stockcode in stock_list:
+    #     second_filter_flag = compare_everyyearnetassets(stockcode,startyear, endyear)
+    #     if second_filter_flag:
+    #         second_stock_list.append(stockcode)       
     custom_columns = ["code"]
-    df = pd.DataFrame(second_stock_list,columns = custom_columns )
+    # df = pd.DataFrame(second_stock_list,columns = custom_columns )
+    df = pd.DataFrame(stock_list,columns = custom_columns )
     df.to_csv("D:\\1\\firstfliter.csv", encoding="gbk",index=False)
 
 

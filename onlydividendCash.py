@@ -129,34 +129,15 @@ def main():
             logging.info("{}报告{}".format(stock, e))
             break
         mycash = calculatedividCash(stock,custom_year+1,totalshare)
-        mynetasset = round(totalshare * float(mystockeprice[1]) / float(mystockeprice[2]))
-        myprofit = round(float(myfinance[0]))
-        try:
-            myrevenue = round(float(myfinance[1]))
-        except Exception as e:
-            logging.info("{}报告{}".format(stock, e))
-            myrevenue = 0
-        if custom_quarter == 1:
-            myprofit = myprofit*4
-            myrevenue = myrevenue*4
-        elif custom_quarter == 2:
-            myprofit = myprofit*2
-            myrevenue = myrevenue*2
-        elif custom_quarter == 3:
-            myprofit = myprofit*4/3
-            myrevenue = myrevenue*4/3
 
-        print("{} {} {} {} {} {} {} {}".format(custom_year,stock, mynetasset, myprofit, myrevenue, totalshare, mycash_flow_ratio, mycash))
         searchquery = "select * from profit where code = '{}' and year = {}".format(stock, custom_year)
         searchResult = cursor.run_query(searchquery)
         if not searchResult:
-            query = "insert into stock.profit ( year, code, netasset ,profit, revenue, totalshares, cash_flow_ratio, cash) values ({}, '{}', {}, {}, {}, {}, {}, {});".format(custom_year,stock, mynetasset, myprofit, myrevenue, totalshare, mycash_flow_ratio, mycash)
-            queryResult = cursor.run_query(query)
-            logging.info("{}的{}数据已添加".format(stock, custom_year))  
+            logging.info("{}的{}数据未查到".format(stock, custom_year))  
         else:
-            query = "update stock.profit set profit={}, revenue={} where code = '{}' and year = {} ;".format(myprofit, myrevenue,stock, custom_year)
+            query = "update stock.profit set cash={} where code = '{}' and year = {} ;".format(mycash, stock, custom_year)
             queryResult = cursor.run_query(query)   
-            logging.info("{}的{}数据已更新".format(stock, custom_year))         
+            logging.info("{}的{}分红数据已更新".format(stock, custom_year))         
     #### 登出系统 ####
     bs.logout()
 

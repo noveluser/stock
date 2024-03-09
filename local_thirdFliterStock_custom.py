@@ -29,7 +29,7 @@ cursor = Database(dbname="stock", username="wangxp01", password="111111", host="
 def main():
     df = pd.DataFrame()
     stock_list = []
-    data = pd.read_csv("d:\\1\\firstfliter.csv")
+    data = pd.read_csv("d:\\1\\custom.csv")
     for index, row in data.iterrows():
         stock_list.append(row[0])
     for item in stock_list:
@@ -91,7 +91,7 @@ def main():
         df = pd.concat([df, ori_df])
     # finallydata = pd.DataFrame(df, columns=custom_columns)
     # df.transpose().to_csv("D:\\1\\detail.csv", encoding="gbk", index=False)
-    df.transpose().to_excel("D:\\1\\detail.xlsx", index=True)
+    df.transpose().to_excel("D:\\1\\detail_custom.xlsx", index=True)
 
 
 if __name__ == '__main__':
