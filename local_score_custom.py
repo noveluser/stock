@@ -42,7 +42,15 @@ def main():
         pe = data.loc[24, item]*data.loc[25, item] / data.loc[9, item]
 
         # cash = row[24]/(row[25]*row[26])
-        cash = data.loc[23, item]/ (data.loc[24, item]*data.loc[25, item])
+
+        # 计算股息率，5年内所有分红除以5年内营收
+        # 计算分红的总和
+        totalcash = data[code].iloc[20:24].sum()
+        # 计算6到10项的总和
+        currentmarketvalue = data.loc[24, item]*data.loc[25, item]
+        # 计算总和的比值
+        dividendyield = totalcash /4 / currentmarketvalue
+
         ROE = data.loc[9, item]/data.loc[4, item] 
         # ROE = row[10] / row[5]
         # netprofileratio = row[10] / row[15]
@@ -62,7 +70,7 @@ def main():
         filtered_growth_rate = growth_rate[growth_rate < max_value]
         # 计算剩余值的平均值
         potential_growing = filtered_growth_rate.mean()
-        logging.info("{} 净资产增长率{} PE:{} 股息率：{}".format(code, potential_growing, pe, cash))
+        logging.info("{} 净资产增长率{} PE:{} 股息率：{}".format(code, potential_growing, pe, dividendyield))
         if potential_growing < 1:
              potential_growing = 0
         elif potential_growing < 5:
@@ -83,13 +91,13 @@ def main():
             potential_pe = 10
         else:
             potential_pe = 5
-        if cash == 0:
+        if dividendyield == 0:
             potential_cash = 0
-        elif cash < 0.02:
+        elif dividendyield < 0.02:
             potential_cash = 5
-        elif cash < 0.04:
+        elif dividendyield < 0.04:
             potential_cash = 10
-        elif cash < 0.06:
+        elif dividendyield < 0.06:
             potential_cash = 15
         else:
             potential_cash = 20
